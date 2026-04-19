@@ -1,4 +1,4 @@
-# TennisCourtDetectorwithYolov8
+# Detecting Tennis Court Keypoints with Yolo
 
 The goal of this project is to see the performance of YOLOv8 at detecting the 14 keypoints of a tennis court to map the lines and perspective.
 
@@ -63,7 +63,7 @@ To test the line and point detection on a live tennis video:
    ```
    This will output a video showing the tennis court lines and keypoints overlaid directly on the original footage.
 
-![](images/infer_video_tennis.mp4)
+![](images/infer_video_tennis.gif))
 
 ## Extra
 
