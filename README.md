@@ -68,6 +68,7 @@ To test the line and point detection on a live tennis video:
 ## Extra
 
 Homography View of Court
+
 ![](images/output1.png)
 
 ## Acknowledgments
