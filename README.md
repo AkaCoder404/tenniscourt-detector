@@ -63,7 +63,7 @@ To test the line and point detection on a live tennis video:
    ```
    This will output a video showing the tennis court lines and keypoints overlaid directly on the original footage.
 
-![](images/infer_video_tennis.gif))
+![](images/infer_video_tennis.gif)
 
 ## Extra
 
