@@ -21,6 +21,7 @@ start_time = time.time()
 model.train(data="datasets_config/tennis.yml",
             epochs=args.epochs,
             imgsz=args.imgsz,
+            batch=args.batch_size,
             plots=True,
             save=args.save_model)
 

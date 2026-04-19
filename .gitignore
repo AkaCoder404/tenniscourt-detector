@@ -6,3 +6,7 @@ runs/
 
 # Don't include __pycache__ directories
 __pycache__/
+venv/
+infer_video_clip.mp4
+final_output.mp4
+*.zip

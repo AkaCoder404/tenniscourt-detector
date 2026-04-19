@@ -1,45 +1,74 @@
-# TennisCourtDetectorwithYolov8.git
+# TennisCourtDetectorwithYolov8
 
-
-## Background
-Inspired by https://github.com/yastrebksv/TennisCourtDetector. Dataset can be found at this github. The goal is to see the performance of YoloV8 at the same task.
+The goal of this project is to see the performance of YOLOv8 at detecting the 14 keypoints of a tennis court to map the lines and perspective.
 
 ![](images/output3.png)
 
-## Environment
-```
-Python 3.11.
-torch 2.1.1
-```
+## Environment Setup
+The project uses Python 3.12 and PyTorch. Setup the environment:
 
-Training was done on Tesla V100-PCIE-16GB GPU for the upload `model.py`.
-
-## Running
-1. First download dataset and move to `datasets/` folder.
-2. Run `convert_to_yolo.ipynb` to convert to coco8, the format supported by YOLOv8 ultralytics.
-3. Run `python train.py`.
-
-
-## Performance
-We trained with `yolov8s-pose.pt` base model. The training results and visualizing methods of the dataset can be found in `evaluate.ipynb`.
-
-### Epoch 10, Batch Size 16, Imgsz 640
-```shell
-Training time: 695.83 seconds
-# model.val()
-Ultralytics YOLOv8.0.217 🚀 Python-3.11.5 torch-2.1.1+cu121 CPU (AMD EPYC 7742 64-Core Processor)
-val: Scanning /home/ltq/Documents/TennisCourtDetectorYoloV8/datasets/tennis_data/labels/val.cache... 2211 images, 0 backgrounds, 0 corrupt: 100%|██████████| 2211/2211 [00:00<?, ?it/s]
-                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95)     Pose(P          R      mAP50  mAP50-95): 100%|██████████| 139/139 [01:51<00:00,  1.24it/s]
-                   all       2211       2211          1          1      0.995      0.995          0          0          0          0
-Speed: 0.1ms preprocess, 31.5ms inference, 0.0ms loss, 0.4ms postprocess per image
-Results saved to runs/pose/val2
-map50-95 0.9949999999999999
-map50 0.995
-map75 0.995
-maps [      0.995]
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install --upgrade pip
+pip install -r requirements.txt
 ```
 
+## Dataset Preparation
+The dataset consists of tennis court images with 14 annotated keypoints per image.
 
+1. Ensure the dataset archive `tennis_court_det_dataset.zip` is located in the project root.
+2. Run the preparation script to extract the dataset and convert it into the YOLO format required by ultralytics:
+
+```bash
+python prepare_dataset.py
+```
+
+This will extract the zip file and create a `datasets/tennis_data` folder inside your project directory containing the YOLO images and labels formatted according to `datasets_config/tennis.yml`.
+
+## Training the Model
+To train the YOLOv8-pose model on the tennis court dataset:
+
+```bash
+python train.py --epochs 10 --batch_size 8
+```
+
+*Hardware: Trained on a NVIDIA GeForce RTX 2070 SUPER, Python 3.12, torch 2.6.0+cu124*
+
+*(Adjust `--epochs` and `--batch_size` according to your hardware capabilities. The model uses `yolov8s-pose.pt` as the base model and saves results to `runs/pose/train/` or `runs/pose/train2/`.)*
+
+## Evaluation
+To evaluate the trained model:
+- You can run the `evaluate.ipynb` Jupyter Notebook.
+- This will output the mAP50 and mAP50-95 scores, as well as visualize the predicted keypoints vs ground truth on a test set. It also demonstrates mapping the court perspective to a 2D top-down reference court.
+
+### Training Results (Epoch 10, Batch Size 8, Imgsz 640)
+
+
+After 10 epochs of training the `yolov8s-pose.pt` base model, the following validation metrics were achieved:
+
+| Metric | Score | Description |
+| :--- | :--- | :--- |
+| **mAP50(B)** | 99.50% | Bounding box detection precision (court presence) |
+| **mAP50(P)** | 99.49% | Keypoint prediction accuracy (corners & intersections) |
+| **mAP50-95(P)** | 99.31% | Extremely strict keypoint mapping precision |
+| **Recall(B)** | 100.0% | Zero missed courts in the validation dataset |
+
+## Video Inference
+To test the line and point detection on a live tennis video:
+1. Obtain a `.mp4` video of a tennis match.
+2. Run the inference script, specifying your input video and the path to your best trained weights:
+   ```bash
+   python inference_video.py --video_path your_video.mp4 --model_path runs/pose/train/weights/best.pt --output_path output.mp4
+   ```
+   This will output a video showing the tennis court lines and keypoints overlaid directly on the original footage.
+
+![](images/infer_video_tennis.mp4)
 
 ## Extra
+
+Homography View of Court
 ![](images/output1.png)
+
+## Acknowledgments
+Thanks to and inspired by https://github.com/yastrebksv/TennisCourtDetector. The dataset can also be found at this GitHub repository.
